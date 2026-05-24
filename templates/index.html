@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SynthReview — AI Product Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #222222;
+    --gold: #c9a84c;
+    --gold-dim: #8a6f2e;
+    --text: #e8e0d0;
+    --text-dim: #6b6358;
+    --white: #f5f0e8;
+    --error: #c0392b;
+    --success: #2ecc71;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BACKGROUND TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 90% 90%, rgba(201,168,76,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* GRAIN OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* HEADER */
+  header {
+    padding: 60px 0 48px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-mark {
+    display: inline-block;
+    width: 2px;
+    height: 32px;
+    background: var(--gold);
+    margin-bottom: 28px;
+    animation: pulse-bar 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-bar {
+    0%, 100% { opacity: 1; transform: scaleY(1); }
+    50% { opacity: 0.4; transform: scaleY(0.6); }
+  }
+
+  .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    color: var(--white);
+    text-transform: uppercase;
+    display: block;
+    line-height: 1;
+  }
+
+  .brand span {
+    color: var(--gold);
+  }
+
+  .tagline {
+    margin-top: 14px;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* DIVIDER */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 48px 0;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border));
+  }
+
+  .divider::after {
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  .divider-icon {
+    color: var(--gold-dim);
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  /* INPUT SECTION */
+  .input-section {
+    margin-bottom: 40px;
+  }
+
+  .input-label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    gap: 0;
+  }
+
+  .url-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-right: none;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    padding: 18px 20px;
+    outline: none;
+    transition: border-color 0.3s;
+    letter-spacing: 0.02em;
+  }
+
+  .url-input::placeholder {
+    color: var(--text-dim);
+    font-size: 0.72rem;
+  }
+
+  .url-input:focus {
+    border-color: var(--gold-dim);
+  }
+
+  .submit-btn {
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    color: #0a0a0a;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 18px 28px;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+
+  .submit-btn:hover {
+    background: var(--white);
+    border-color: var(--white);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* LOADING STATE */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 48px 0;
+  }
+
+  .loading.active { display: block; }
+
+  .loading-bars {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 5px;
+    height: 32px;
+    margin-bottom: 20px;
+  }
+
+  .loading-bars span {
+    display: block;
+    width: 3px;
+    background: var(--gold);
+    animation: bar-dance 1.2s ease-in-out infinite;
+    border-radius: 2px;
+  }
+
+  .loading-bars span:nth-child(1) { animation-delay: 0s; height: 12px; }
+  .loading-bars span:nth-child(2) { animation-delay: 0.15s; height: 20px; }
+  .loading-bars span:nth-child(3) { animation-delay: 0.3s; height: 28px; }
+  .loading-bars span:nth-child(4) { animation-delay: 0.45s; height: 20px; }
+  .loading-bars span:nth-child(5) { animation-delay: 0.6s; height: 12px; }
+
+  @keyframes bar-dance {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
+    50% { transform: scaleY(1); opacity: 1; }
+  }
+
+  .loading-text {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* ERROR */
+  .error-msg {
+    display: none;
+    background: rgba(192, 57, 43, 0.08);
+    border: 1px solid rgba(192, 57, 43, 0.3);
+    color: #e74c3c;
+    padding: 14px 18px;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    margin-top: 12px;
+  }
+
+  .error-msg.active { display: block; }
+
+  /* RESULT CARD */
+  .result {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .result.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .product-header {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    padding: 8px;
+  }
+
+  .product-image.hidden { display: none; }
+
+  .product-info { flex: 1; }
+
+  .product-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--white);
+    line-height: 1.4;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .rating-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .rating-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .rating-stars {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .star {
+    width: 10px;
+    height: 10px;
+    background: var(--gold);
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    transition: background 0.2s;
+  }
+
+  .star.empty { background: var(--border); }
+
+  .rating-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* SUMMARY */
+  .summary-section { }
+
+  .summary-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .summary-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .summary-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 300;
+    line-height: 1.85;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 48px 0 36px;
+    border-top: 1px solid var(--border);
+    margin-top: 64px;
+  }
+
+  .footer-text {
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* ANIMATE IN */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-in {
+    animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header class="animate-in">
+    <div class="logo-mark"></div>
+    <span class="brand">Synth<span>Review</span></span>
+    <p class="tagline">AI-Powered Product Intelligence</p>
+  </header>
+
+  <div class="divider animate-in delay-1">
+    <span class="divider-icon">◆</span>
+  </div>
+
+  <div class="input-section animate-in delay-2">
+    <label class="input-label" for="urlInput">Amazon Product URL</label>
+    <div class="input-wrapper">
+      <input
+        type="text"
+        id="urlInput"
+        class="url-input"
+        placeholder="https://www.amazon.in/dp/B08N5WRWNW"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
+        Analyse
+      </button>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="loading-bars">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <p class="loading-text" id="loadingText">Fetching reviews</p>
+  </div>
+
+  <div class="result" id="result">
+
+    <div class="product-header">
+      <img id="productImage" class="product-image hidden" src="" alt="Product"/>
+      <div class="product-info">
+        <h2 class="product-title" id="productTitle"></h2>
+        <div class="rating-display">
+          <div class="rating-number" id="ratingNumber"></div>
+          <div class="rating-stars">
+            <div class="stars" id="starsDisplay"></div>
+            <div class="rating-label">Overall Rating</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-section">
+      <div class="summary-label">AI Summary</div>
+      <p class="summary-text" id="summaryText"></p>
+    </div>
+
+  </div>
+
+  <footer>
+    <p class="footer-text">SynthReview &nbsp;·&nbsp; Powered by T5 &nbsp;·&nbsp; Amazon Reviews API</p>
+  </footer>
+
+</div>
+
+<script>
+  const loadingMessages = [
+    "Fetching reviews",
+    "Analysing sentiment",
+    "Synthesising insights",
+    "Crafting summary"
+  ];
+
+  function showLoading() {
+    let i = 0;
+    const el = document.getElementById("loadingText");
+    return setInterval(() => {
+      el.textContent = loadingMessages[i % loadingMessages.length];
+      i++;
+    }, 1800);
+  }
+
+  function renderStars(rating) {
+    const num = parseFloat(rating);
+    const container = document.getElementById("starsDisplay");
+    container.innerHTML = "";
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement("div");
+      star.className = "star" + (i <= Math.round(num) ? "" : " empty");
+      container.appendChild(star);
+    }
+  }
+
+  async function handleSubmit() {
+    const url = document.getElementById("urlInput").value.trim();
+    const btn = document.getElementById("submitBtn");
+    const errorEl = document.getElementById("errorMsg");
+    const loadingEl = document.getElementById("loading");
+    const resultEl = document.getElementById("result");
+
+    // Reset
+    errorEl.classList.remove("active");
+    resultEl.classList.remove("active");
+    resultEl.style.display = "none";
+
+    if (!url) {
+      errorEl.textContent = "Please enter an Amazon product URL.";
+      errorEl.classList.add("active");
+      return;
+    }
+
+    btn.disabled = true;
+    loadingEl.classList.add("active");
+    const interval = showLoading();
+
+    try {
+      const res = await fetch("/summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+      });
+
+      const data = await res.json();
+
+      clearInterval(interval);
+      loadingEl.classList.remove("active");
+
+      if (!res.ok || data.error) {
+        errorEl.textContent = data.error || "Something went wrong. Please try again.";
+        errorEl.classList.add("active");
+        return;
+      }
+
+      // Populate result
+      document.getElementById("productTitle").textContent = data.title;
+      document.getElementById("ratingNumber").textContent = data.rating;
+      document.getElementById("summaryText").textContent = data.summary;
+      renderStars(data.rating);
+
+      const img = document.getElementById("productImage");
+      if (data.image) {
+        img.src = data.image;
+        img.classList.remove("hidden");
+      } else {
+        img.classList.add("hidden");
+      }
+
+      // Show result with animation
+      resultEl.style.display = "block";
+      setTimeout(() => resultEl.classList.add("active"), 10);
+
+    } catch (err) {
+      clearInterval(interval);
+      loadingEl.classList.remove("active");
+      errorEl.textContent = "Network error. Please try again.";
+      errorEl.classList.add("active");
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // Enter key support
+  document.getElementById("urlInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleSubmit();
+  });
+</script>
+
+</body>
+</html>
