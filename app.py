@@ -10,14 +10,26 @@ RAPIDAPI_KEY = os.environ.get("RAPIDAPI_KEY", "91450373f9msh35af52807147cc7p1743
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "your_groq_key_here")
 
 def extract_asin(url):
+    # Standard URL formats
     match = re.search(r"/dp/([A-Z0-9]{10})", url)
     if match:
         return match.group(1)
     match = re.search(r"/gp/product/([A-Z0-9]{10})", url)
     if match:
         return match.group(1)
+    # Direct ASIN paste
     if re.match(r"^[A-Z0-9]{10}$", url.strip()):
         return url.strip()
+    # Short URL - resolve it first
+    if "amzn.in" in url or "amzn.to" in url:
+        try:
+            response = requests.get(url, allow_redirects=True, timeout=10)
+            final_url = response.url
+            match = re.search(r"/dp/([A-Z0-9]{10})", final_url)
+            if match:
+                return match.group(1)
+        except:
+            pass
     return None
 
 def fetch_balanced_reviews(asin):
