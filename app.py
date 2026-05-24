@@ -59,11 +59,13 @@ def get_product_info(asin):
                 "title": data["data"].get("product_title", "Product"),
                 "rating": data["data"].get("product_star_rating", "N/A"),
                 "image": data["data"].get("product_photo", ""),
-                "ratings_total": data["data"].get("product_num_ratings", 0)
+                "ratings_total": data["data"].get("product_num_ratings", 0),
+                "price": data["data"].get("product_price", "N/A"),
+                "url": data["data"].get("product_url", "")
             }
     except:
         pass
-    return {"title": "Product", "rating": "N/A", "image": "", "ratings_total": 0}
+    return {"title": "Product", "rating": "N/A", "image": "", "ratings_total": 0, "price": "N/A", "url": ""}
 
 def calculate_sentiment(reviews):
     if not reviews:
@@ -140,25 +142,14 @@ Reviews:
         result = response.json()
         if "choices" in result:
             content = result["choices"][0]["message"]["content"].strip()
-            # Extract JSON from response
             json_match = re.search(r'\{.*\}', content, re.DOTALL)
             if json_match:
                 parsed = json.loads(json_match.group())
                 return parsed
-        return {
-            "summary": "Summary unavailable.",
-            "pros": [],
-            "cons": [],
-            "verdict": "Please try again."
-        }
+        return {"summary": "Summary unavailable.", "pros": [], "cons": [], "verdict": "Please try again."}
     except Exception as e:
         print(f"Groq error: {e}")
-        return {
-            "summary": f"Error: {str(e)}",
-            "pros": [],
-            "cons": [],
-            "verdict": "Error occurred."
-        }
+        return {"summary": f"Error: {str(e)}", "pros": [], "cons": [], "verdict": "Error occurred."}
 
 @app.route("/")
 def index():
@@ -191,6 +182,8 @@ def summarize():
         "rating": product["rating"],
         "image": product["image"],
         "ratings_total": product["ratings_total"],
+        "price": product["price"],
+        "product_url": product["url"],
         "summary": analysis.get("summary", ""),
         "pros": analysis.get("pros", []),
         "cons": analysis.get("cons", []),

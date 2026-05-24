@@ -50,7 +50,6 @@
     padding: 0 24px;
   }
 
-  /* HEADER */
   header {
     padding: 56px 0 44px;
     text-align: center;
@@ -81,43 +80,16 @@
     display: block;
     line-height: 1;
   }
-
   .brand span { color: var(--gold); }
-  .tagline {
-    margin-top: 12px;
-    font-size: 0.6rem;
-    letter-spacing: 0.35em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
+  .tagline { margin-top: 12px; font-size: 0.6rem; letter-spacing: 0.35em; color: var(--text-dim); text-transform: uppercase; }
 
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 44px 0;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-  }
-  .divider::before { background: linear-gradient(90deg, transparent, var(--border)); }
-  .divider::after { background: linear-gradient(90deg, var(--border), transparent); }
+  .divider { display: flex; align-items: center; gap: 16px; margin: 44px 0; }
+  .divider::before { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--border)); }
+  .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
   .divider-icon { color: var(--gold-dim); font-size: 0.5rem; }
 
-  /* INPUT */
-  .input-label {
-    display: block;
-    font-size: 0.58rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-  }
-
-  .input-wrapper { display: flex; margin-bottom: 40px; }
-
+  .input-label { display: block; font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+  .input-wrapper { display: flex; margin-bottom: 12px; }
   .url-input {
     flex: 1;
     background: var(--surface);
@@ -132,7 +104,6 @@
   }
   .url-input::placeholder { color: var(--text-dim); font-size: 0.7rem; }
   .url-input:focus { border-color: var(--gold-dim); }
-
   .submit-btn {
     background: var(--gold);
     border: 1px solid var(--gold);
@@ -149,24 +120,32 @@
   .submit-btn:hover { background: var(--white); border-color: var(--white); }
   .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* LOADING */
+  /* HISTORY */
+  .history-section { margin-bottom: 32px; display: none; }
+  .history-section.active { display: block; }
+  .history-label { font-size: 0.52rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .history-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .history-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 220px;
+  }
+  .history-item:hover { border-color: var(--gold-dim); color: var(--text); }
+  .history-item-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .history-item-rating { color: var(--gold); flex-shrink: 0; }
+
   .loading { display: none; text-align: center; padding: 44px 0; }
   .loading.active { display: block; }
-  .loading-bars {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 5px;
-    height: 28px;
-    margin-bottom: 16px;
-  }
-  .loading-bars span {
-    display: block;
-    width: 3px;
-    background: var(--gold);
-    animation: bar-dance 1.2s ease-in-out infinite;
-    border-radius: 2px;
-  }
+  .loading-bars { display: flex; justify-content: center; align-items: flex-end; gap: 5px; height: 28px; margin-bottom: 16px; }
+  .loading-bars span { display: block; width: 3px; background: var(--gold); animation: bar-dance 1.2s ease-in-out infinite; border-radius: 2px; }
   .loading-bars span:nth-child(1) { animation-delay: 0s; height: 10px; }
   .loading-bars span:nth-child(2) { animation-delay: 0.15s; height: 18px; }
   .loading-bars span:nth-child(3) { animation-delay: 0.3s; height: 26px; }
@@ -178,201 +157,130 @@
   }
   .loading-text { font-size: 0.58rem; letter-spacing: 0.3em; color: var(--text-dim); text-transform: uppercase; }
 
-  /* ERROR */
   .error-msg { display: none; background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.3); color: #e74c3c; padding: 12px 16px; font-size: 0.7rem; margin-top: 10px; }
   .error-msg.active { display: block; }
 
-  /* RESULT */
   .result { display: none; opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.16,1,0.3,1); }
   .result.active { display: block; opacity: 1; transform: translateY(0); }
 
   /* PRODUCT HEADER */
-  .product-header {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
-  }
-  .product-image {
-    width: 88px;
-    height: 88px;
-    object-fit: contain;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    flex-shrink: 0;
-    padding: 8px;
-  }
+  .product-header { display: flex; gap: 20px; align-items: flex-start; padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .product-image { width: 88px; height: 88px; object-fit: contain; background: var(--surface); border: 1px solid var(--border); flex-shrink: 0; padding: 8px; }
   .product-image.hidden { display: none; }
-  .product-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2rem;
-    font-weight: 400;
-    color: var(--white);
-    line-height: 1.4;
-    margin-bottom: 10px;
-  }
-  .rating-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .rating-number {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2rem;
-    font-weight: 300;
-    color: var(--gold);
-    line-height: 1;
-  }
+  .product-info { flex: 1; }
+  .product-title { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; color: var(--white); line-height: 1.4; margin-bottom: 10px; }
+
+  .product-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+  .rating-number { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--gold); line-height: 1; }
   .stars { display: flex; gap: 3px; }
-  .star {
-    width: 10px; height: 10px;
-    background: var(--gold);
-    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-  }
+  .star { width: 10px; height: 10px; background: var(--gold); clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); }
   .star.empty { background: var(--border); }
   .rating-label { font-size: 0.52rem; letter-spacing: 0.22em; color: var(--text-dim); text-transform: uppercase; }
 
-  /* SECTION LABEL */
-  .section-label {
-    font-size: 0.52rem;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--gold-dim);
-    margin-bottom: 14px;
-    display: flex;
+  .price-badge {
+    background: var(--surface2);
+    border: 1px solid var(--gold-dim);
+    padding: 5px 12px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+
+  /* BUY/SKIP BADGE */
+  .decision-badge {
+    display: inline-flex;
     align-items: center;
     gap: 10px;
-  }
-  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* SUMMARY */
-  .summary-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
-    font-weight: 300;
-    line-height: 1.85;
-    color: var(--text);
+    padding: 10px 20px;
     margin-bottom: 28px;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-weight: 400;
+    border: 1px solid;
   }
-
-  /* SENTIMENT METER */
-  .sentiment-block { margin-bottom: 28px; }
-  .sentiment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .sentiment-pct {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
+  .decision-badge.buy {
+    background: rgba(76,175,125,0.1);
+    border-color: var(--green);
     color: var(--green);
   }
-  .sentiment-neg {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
+  .decision-badge.skip {
+    background: rgba(192,87,74,0.1);
+    border-color: var(--red);
     color: var(--red);
   }
-  .meter-track {
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .meter-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--green), var(--gold));
-    border-radius: 2px;
-    transition: width 1s cubic-bezier(0.16,1,0.3,1);
-    width: 0%;
-  }
-  .meter-labels {
+  .decision-badge .badge-icon { font-size: 1rem; }
+  .decision-badge .badge-label { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-style: italic; }
+
+  .section-label { font-size: 0.52rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .summary-text { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; line-height: 1.85; color: var(--text); margin-bottom: 28px; }
+
+  /* SHARE BUTTON */
+  .share-row { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+  .share-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.3s;
     display: flex;
-    justify-content: space-between;
-    margin-top: 6px;
+    align-items: center;
+    gap: 8px;
   }
+  .share-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+  .share-btn.copied { border-color: var(--green); color: var(--green); }
+
+  /* SENTIMENT */
+  .sentiment-block { margin-bottom: 28px; }
+  .sentiment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .sentiment-pct { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--green); }
+  .sentiment-neg { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--red); }
+  .meter-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .meter-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--gold)); border-radius: 2px; transition: width 1s cubic-bezier(0.16,1,0.3,1); width: 0%; }
+  .meter-labels { display: flex; justify-content: space-between; margin-top: 6px; }
   .meter-labels span { font-size: 0.5rem; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; }
 
   /* PROS CONS */
-  .pros-cons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 28px;
-  }
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
   @media (max-width: 560px) { .pros-cons { grid-template-columns: 1fr; } }
-
-  .pros-box, .cons-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 18px;
-  }
+  .pros-box, .cons-box { background: var(--surface); border: 1px solid var(--border); padding: 18px; }
   .pros-box { border-top: 2px solid var(--green); }
   .cons-box { border-top: 2px solid var(--red); }
-
-  .box-title {
-    font-size: 0.52rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
+  .box-title { font-size: 0.52rem; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 12px; }
   .pros-box .box-title { color: var(--green); }
   .cons-box .box-title { color: var(--red); }
-
   .pros-list, .cons-list { list-style: none; }
-  .pros-list li, .cons-list li {
-    font-size: 0.72rem;
-    line-height: 1.6;
-    color: var(--text);
-    padding: 5px 0;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-  }
+  .pros-list li, .cons-list li { font-size: 0.72rem; line-height: 1.6; color: var(--text); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-start; }
   .pros-list li:last-child, .cons-list li:last-child { border-bottom: none; }
   .pros-list li::before { content: '+'; color: var(--green); flex-shrink: 0; font-weight: bold; }
   .cons-list li::before { content: '−'; color: var(--red); flex-shrink: 0; font-weight: bold; }
 
   /* VERDICT */
-  .verdict-box {
-    background: var(--surface2);
-    border: 1px solid var(--gold-dim);
-    padding: 16px 20px;
-    margin-bottom: 28px;
-    display: flex;
-    gap: 14px;
-    align-items: center;
-  }
+  .verdict-box { background: var(--surface2); border: 1px solid var(--gold-dim); padding: 16px 20px; margin-bottom: 28px; display: flex; gap: 14px; align-items: center; }
   .verdict-icon { color: var(--gold); font-size: 1rem; flex-shrink: 0; }
   .verdict-label { font-size: 0.5rem; letter-spacing: 0.25em; color: var(--gold-dim); text-transform: uppercase; display: block; margin-bottom: 4px; }
-  .verdict-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    font-style: italic;
-    color: var(--white);
-    line-height: 1.4;
-  }
+  .verdict-text { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-style: italic; color: var(--white); line-height: 1.4; }
 
   /* HIGHLIGHTS */
   .highlights-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-  .highlight-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--gold-dim);
-    padding: 14px 16px;
-  }
+  .highlight-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--gold-dim); padding: 14px 16px; }
   .highlight-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .highlight-title { font-size: 0.72rem; color: var(--white); font-weight: 400; }
+  .highlight-title { font-size: 0.72rem; color: var(--white); }
   .highlight-stars { font-size: 0.6rem; color: var(--gold); letter-spacing: 2px; }
   .highlight-comment { font-size: 0.68rem; color: var(--text-dim); line-height: 1.6; font-style: italic; }
 
-  /* FOOTER */
   footer { text-align: center; padding: 44px 0 32px; border-top: 1px solid var(--border); margin-top: 56px; }
   .footer-text { font-size: 0.52rem; letter-spacing: 0.28em; color: var(--text-dim); text-transform: uppercase; }
 
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(14px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   .animate-in { animation: fade-up 0.7s cubic-bezier(0.16,1,0.3,1) both; }
   .delay-1 { animation-delay: 0.1s; }
   .delay-2 { animation-delay: 0.2s; }
@@ -398,6 +306,12 @@
       <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Analyse</button>
     </div>
     <div class="error-msg" id="errorMsg"></div>
+
+    <!-- HISTORY -->
+    <div class="history-section" id="historySection">
+      <div class="history-label">Recent Searches</div>
+      <div class="history-list" id="historyList"></div>
+    </div>
   </div>
 
   <div class="loading" id="loading">
@@ -412,37 +326,50 @@
     <!-- PRODUCT HEADER -->
     <div class="product-header">
       <img id="productImage" class="product-image hidden" src="" alt="Product"/>
-      <div>
+      <div class="product-info">
         <h2 class="product-title" id="productTitle"></h2>
-        <div class="rating-row">
+        <div class="product-meta">
           <div class="rating-number" id="ratingNumber"></div>
           <div class="stars" id="starsDisplay"></div>
           <div class="rating-label">Overall Rating</div>
+          <div class="price-badge" id="priceBadge"></div>
         </div>
       </div>
+    </div>
+
+    <!-- BUY OR SKIP BADGE -->
+    <div id="decisionBadge" class="decision-badge">
+      <span class="badge-icon" id="badgeIcon"></span>
+      <span class="badge-label" id="badgeLabel"></span>
+      <span id="badgeReason"></span>
+    </div>
+
+    <!-- SHARE BUTTONS -->
+    <div class="share-row">
+      <button class="share-btn" id="copyBtn" onclick="copyToClipboard()">
+        ◈ Copy Summary
+      </button>
+      <button class="share-btn" onclick="shareWhatsApp()">
+        ◈ Share on WhatsApp
+      </button>
     </div>
 
     <!-- SUMMARY -->
     <div class="section-label">AI Summary</div>
     <p class="summary-text" id="summaryText"></p>
 
-    <!-- SENTIMENT METER -->
+    <!-- SENTIMENT -->
     <div class="sentiment-block">
       <div class="section-label">Sentiment Analysis</div>
       <div class="sentiment-header">
         <span class="sentiment-pct" id="positivePct"></span>
         <span class="sentiment-neg" id="negativePct"></span>
       </div>
-      <div class="meter-track">
-        <div class="meter-fill" id="meterFill"></div>
-      </div>
-      <div class="meter-labels">
-        <span>Positive</span>
-        <span>Negative</span>
-      </div>
+      <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+      <div class="meter-labels"><span>Positive</span><span>Negative</span></div>
     </div>
 
-    <!-- PROS AND CONS -->
+    <!-- PROS CONS -->
     <div class="section-label">Pros & Cons</div>
     <div class="pros-cons">
       <div class="pros-box">
@@ -464,7 +391,7 @@
       </div>
     </div>
 
-    <!-- REVIEW HIGHLIGHTS -->
+    <!-- HIGHLIGHTS -->
     <div class="section-label">Review Highlights</div>
     <div class="highlights-list" id="highlightsList"></div>
 
@@ -484,15 +411,97 @@
     "Crafting verdict"
   ];
 
-  function showLoading() {
-    let i = 0;
-    const el = document.getElementById("loadingText");
-    return setInterval(() => {
-      el.textContent = loadingMessages[i % loadingMessages.length];
-      i++;
-    }, 1800);
+  let currentData = null;
+
+  // ---- HISTORY ----
+  function loadHistory() {
+    try {
+      return JSON.parse(localStorage.getItem("synthreview_history") || "[]");
+    } catch { return []; }
   }
 
+  function saveToHistory(item) {
+    let history = loadHistory();
+    // Remove duplicate
+    history = history.filter(h => h.url !== item.url);
+    history.unshift(item);
+    history = history.slice(0, 5);
+    localStorage.setItem("synthreview_history", JSON.stringify(history));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const history = loadHistory();
+    const section = document.getElementById("historySection");
+    const list = document.getElementById("historyList");
+    if (history.length === 0) {
+      section.classList.remove("active");
+      return;
+    }
+    section.classList.add("active");
+    list.innerHTML = "";
+    history.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "history-item";
+      div.innerHTML = `
+        <span class="history-item-title">${item.title}</span>
+        <span class="history-item-rating">★ ${item.rating}</span>
+      `;
+      div.onclick = () => {
+        document.getElementById("urlInput").value = item.url;
+        handleSubmit();
+      };
+      list.appendChild(div);
+    });
+  }
+
+  // ---- SHARE ----
+  function copyToClipboard() {
+    if (!currentData) return;
+    const text = `🛍️ ${currentData.title}\n⭐ Rating: ${currentData.rating}/5\n💰 Price: ${currentData.price}\n\n📝 Summary:\n${currentData.summary}\n\n✅ Pros:\n${currentData.pros.map(p => '+ ' + p).join('\n')}\n\n❌ Cons:\n${currentData.cons.map(c => '- ' + c).join('\n')}\n\n🏆 Verdict: ${currentData.verdict}\n\nAnalysed by SynthReview — synthreview.onrender.com`;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById("copyBtn");
+      btn.textContent = "✓ Copied!";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.textContent = "◈ Copy Summary";
+        btn.classList.remove("copied");
+      }, 2000);
+    });
+  }
+
+  function shareWhatsApp() {
+    if (!currentData) return;
+    const text = encodeURIComponent(`🛍️ *${currentData.title}*\n⭐ Rating: ${currentData.rating}/5\n💰 Price: ${currentData.price}\n\n📝 *Summary:* ${currentData.summary}\n\n🏆 *Verdict:* ${currentData.verdict}\n\nAnalysed by SynthReview`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  }
+
+  // ---- DECISION BADGE ----
+  function renderDecisionBadge(sentiment) {
+    const badge = document.getElementById("decisionBadge");
+    const icon = document.getElementById("badgeIcon");
+    const label = document.getElementById("badgeLabel");
+    const reason = document.getElementById("badgeReason");
+
+    if (sentiment >= 70) {
+      badge.className = "decision-badge buy";
+      icon.textContent = "✓";
+      label.textContent = "Buy It";
+      reason.textContent = `${sentiment}% of reviewers recommend this product`;
+    } else if (sentiment >= 50) {
+      badge.className = "decision-badge buy";
+      icon.textContent = "~";
+      label.textContent = "Consider It";
+      reason.textContent = `Mixed reviews — read the cons carefully`;
+    } else {
+      badge.className = "decision-badge skip";
+      icon.textContent = "✕";
+      label.textContent = "Skip It";
+      reason.textContent = `${100 - sentiment}% of reviewers had issues`;
+    }
+  }
+
+  // ---- STARS ----
   function renderStars(rating) {
     const num = parseFloat(rating);
     const container = document.getElementById("starsDisplay");
@@ -525,18 +534,28 @@
     container.innerHTML = "";
     if (!highlights || highlights.length === 0) return;
     highlights.forEach(h => {
-      const stars = "★".repeat(parseInt(h.stars) || 0) + "☆".repeat(5 - (parseInt(h.stars) || 0));
+      const filled = "★".repeat(parseInt(h.stars) || 0);
+      const empty = "☆".repeat(5 - (parseInt(h.stars) || 0));
       const card = document.createElement("div");
       card.className = "highlight-card";
       card.innerHTML = `
         <div class="highlight-header">
           <span class="highlight-title">${h.title}</span>
-          <span class="highlight-stars">${stars}</span>
+          <span class="highlight-stars">${filled}${empty}</span>
         </div>
         <div class="highlight-comment">"${h.comment}"</div>
       `;
       container.appendChild(card);
     });
+  }
+
+  function showLoading() {
+    let i = 0;
+    const el = document.getElementById("loadingText");
+    return setInterval(() => {
+      el.textContent = loadingMessages[i % loadingMessages.length];
+      i++;
+    }, 1800);
   }
 
   async function handleSubmit() {
@@ -577,33 +596,34 @@
         return;
       }
 
-      // Populate all fields
+      currentData = { ...data, url };
+
+      // Populate fields
       document.getElementById("productTitle").textContent = data.title;
       document.getElementById("ratingNumber").textContent = data.rating;
       document.getElementById("summaryText").textContent = data.summary;
       document.getElementById("verdictText").textContent = data.verdict;
+      document.getElementById("priceBadge").textContent = data.price !== "N/A" ? data.price : "";
 
       renderStars(data.rating);
+      renderDecisionBadge(data.sentiment);
       renderList(data.pros, "prosList", "No pros found");
       renderList(data.cons, "consList", "No cons found");
       renderHighlights(data.highlights);
 
-      // Sentiment meter
+      // Sentiment
       const pct = data.sentiment || 50;
       document.getElementById("positivePct").textContent = pct + "% Positive";
       document.getElementById("negativePct").textContent = (100 - pct) + "% Negative";
-      setTimeout(() => {
-        document.getElementById("meterFill").style.width = pct + "%";
-      }, 100);
+      setTimeout(() => { document.getElementById("meterFill").style.width = pct + "%"; }, 100);
 
-      // Product image
+      // Image
       const img = document.getElementById("productImage");
-      if (data.image) {
-        img.src = data.image;
-        img.classList.remove("hidden");
-      } else {
-        img.classList.add("hidden");
-      }
+      if (data.image) { img.src = data.image; img.classList.remove("hidden"); }
+      else { img.classList.add("hidden"); }
+
+      // Save to history
+      saveToHistory({ url, title: data.title.substring(0, 40) + (data.title.length > 40 ? "..." : ""), rating: data.rating });
 
       resultEl.style.display = "block";
       setTimeout(() => resultEl.classList.add("active"), 10);
@@ -621,6 +641,9 @@
   document.getElementById("urlInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleSubmit();
   });
+
+  // Load history on page load
+  renderHistory();
 </script>
 </body>
 </html>
