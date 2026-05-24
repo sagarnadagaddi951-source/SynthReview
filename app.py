@@ -72,29 +72,29 @@ def summarize_reviews(reviews):
     if not combined.strip():
         return "No review content available to summarize."
 
-    # Truncate to 1000 chars for API limit
-    combined = combined[:1000]
+    combined = combined[:2000]
 
-    API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
-    headers = {"Authorization": f"Bearer {HF_API_KEY}"}
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {os.environ.get('GROQ_API_KEY', '')}",
+        "Content-Type": "application/json"
+    }
     payload = {
-        "inputs": combined,
-        "parameters": {
-            "max_length": 150,
-            "min_length": 40,
-            "do_sample": False
-        }
+        "model": "llama3-8b-8192",
+        "messages": [
+            {
+                "role": "user",
+                "content": f"Summarize these product reviews in 3-4 sentences covering the key positives and negatives:\n\n{combined}"
+            }
+        ],
+        "max_tokens": 200
     }
     try:
-        response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+        response = requests.post(url, headers=headers, json=payload, timeout=30)
         result = response.json()
-        if isinstance(result, list) and "summary_text" in result[0]:
-            return result[0]["summary_text"]
-        else:
-            return "Summary could not be generated. Please try again."
+        return result["choices"][0]["message"]["content"]
     except Exception as e:
         return f"Summarization error: {str(e)}"
-
 @app.route("/")
 def index():
     return render_template("index.html")
