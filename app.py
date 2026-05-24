@@ -1,19 +1,12 @@
 from flask import Flask, render_template, request, jsonify
-from transformers import T5ForConditionalGeneration, T5Tokenizer
 import requests
 import re
 import os
 
 app = Flask(__name__)
 
-# --- API KEY HIDDEN FROM USER ---
 RAPIDAPI_KEY = os.environ.get("RAPIDAPI_KEY", "91450373f9msh35af52807147cc7p1743b6jsn2e56927852de")
-
-# --- LOAD T5 MODEL ONCE AT STARTUP ---
-print("Loading T5 model...")
-tokenizer = T5Tokenizer.from_pretrained("t5-small")
-model = T5ForConditionalGeneration.from_pretrained("t5-small")
-print("Model ready.")
+HF_API_KEY = os.environ.get("HF_API_KEY", "your_hf_key_here")
 
 def extract_asin(url):
     match = re.search(r"/dp/([A-Z0-9]{10})", url)
@@ -22,7 +15,6 @@ def extract_asin(url):
     match = re.search(r"/gp/product/([A-Z0-9]{10})", url)
     if match:
         return match.group(1)
-    # If user directly pastes ASIN
     if re.match(r"^[A-Z0-9]{10}$", url.strip()):
         return url.strip()
     return None
@@ -79,21 +71,29 @@ def summarize_reviews(reviews):
     ])
     if not combined.strip():
         return "No review content available to summarize."
-    input_text = "summarize: " + combined
-    tokens = tokenizer.encode(
-        input_text,
-        return_tensors="pt",
-        max_length=512,
-        truncation=True
-    )
-    output = model.generate(
-        tokens,
-        max_length=150,
-        min_length=40,
-        length_penalty=2.0,
-        num_beams=4
-    )
-    return tokenizer.decode(output[0], skip_special_tokens=True)
+
+    # Truncate to 1000 chars for API limit
+    combined = combined[:1000]
+
+    API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
+    headers = {"Authorization": f"Bearer {HF_API_KEY}"}
+    payload = {
+        "inputs": combined,
+        "parameters": {
+            "max_length": 150,
+            "min_length": 40,
+            "do_sample": False
+        }
+    }
+    try:
+        response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+        result = response.json()
+        if isinstance(result, list) and "summary_text" in result[0]:
+            return result[0]["summary_text"]
+        else:
+            return "Summary could not be generated. Please try again."
+    except Exception as e:
+        return f"Summarization error: {str(e)}"
 
 @app.route("/")
 def index():
@@ -109,17 +109,14 @@ def summarize():
 
     asin = extract_asin(url_input)
     if not asin:
-        return jsonify({"error": "Could not find a valid product ID in the URL. Please check and try again."}), 400
+        return jsonify({"error": "Could not find a valid product ID in the URL."}), 400
 
-    # Fetch product info
     product = get_product_info(asin)
-
-    # Fetch reviews
     reviews = fetch_balanced_reviews(asin)
+
     if not reviews:
         return jsonify({"error": "No reviews found for this product."}), 404
 
-    # Summarize
     summary = summarize_reviews(reviews)
 
     return jsonify({
