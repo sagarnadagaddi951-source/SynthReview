@@ -2,11 +2,12 @@ from flask import Flask, render_template, request, jsonify
 import requests
 import re
 import os
+import json
 
 app = Flask(__name__)
 
 RAPIDAPI_KEY = os.environ.get("RAPIDAPI_KEY", "91450373f9msh35af52807147cc7p1743b6jsn2e56927852de")
-HF_API_KEY = os.environ.get("HF_API_KEY", "your_hf_key_here")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "your_groq_key_here")
 
 def extract_asin(url):
     match = re.search(r"/dp/([A-Z0-9]{10})", url)
@@ -57,50 +58,108 @@ def get_product_info(asin):
             return {
                 "title": data["data"].get("product_title", "Product"),
                 "rating": data["data"].get("product_star_rating", "N/A"),
-                "image": data["data"].get("product_photo", "")
+                "image": data["data"].get("product_photo", ""),
+                "ratings_total": data["data"].get("product_num_ratings", 0)
             }
     except:
         pass
-    return {"title": "Product", "rating": "N/A", "image": ""}
+    return {"title": "Product", "rating": "N/A", "image": "", "ratings_total": 0}
 
-def summarize_reviews(reviews):
+def calculate_sentiment(reviews):
+    if not reviews:
+        return 50
+    total = 0
+    count = 0
+    for r in reviews:
+        try:
+            rating = float(r.get("review_star_rating", 0))
+            if rating > 0:
+                total += rating
+                count += 1
+        except:
+            continue
+    if count == 0:
+        return 50
+    avg = total / count
+    return round((avg / 5) * 100)
+
+def get_highlights(reviews):
+    highlights = []
+    for r in reviews[:3]:
+        title = r.get("review_title", "").strip()
+        comment = r.get("review_comment", "").strip()
+        stars = r.get("review_star_rating", "?")
+        if title and comment:
+            highlights.append({
+                "title": title,
+                "comment": comment[:150] + "..." if len(comment) > 150 else comment,
+                "stars": stars
+            })
+    return highlights
+
+def analyze_reviews(reviews):
     combined = " ".join([
         r.get("review_comment", "")
         for r in reviews
         if r.get("review_comment", "").strip()
     ])
     if not combined.strip():
-        return "No review content available to summarize."
+        return {
+            "summary": "No review content available.",
+            "pros": [],
+            "cons": [],
+            "verdict": "Insufficient data"
+        }
 
     combined = combined[:2000]
 
+    prompt = f"""Analyze these Amazon product reviews and respond ONLY with a valid JSON object in exactly this format:
+{{
+  "summary": "2-3 sentence overall summary",
+  "pros": ["pro 1", "pro 2", "pro 3"],
+  "cons": ["con 1", "con 2", "con 3"],
+  "verdict": "One line recommendation for buyers"
+}}
+
+Reviews:
+{combined}"""
+
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
-        "Authorization": f"Bearer {os.environ.get('GROQ_API_KEY', '')}",
+        "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
     }
     payload = {
         "model": "llama-3.1-8b-instant",
-        "messages": [
-            {
-                "role": "user",
-                "content": f"Summarize these product reviews in 3-4 sentences covering key positives and negatives:\n\n{combined}"
-            }
-        ],
-        "max_tokens": 200
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 400,
+        "temperature": 0.3
     }
     try:
         response = requests.post(url, headers=headers, json=payload, timeout=30)
         result = response.json()
-        print("GROQ RESPONSE:", result)  # for debugging
         if "choices" in result:
-            return result["choices"][0]["message"]["content"]
-        elif "error" in result:
-            return f"API error: {result['error']['message']}"
-        else:
-            return "Summary could not be generated. Please try again."
+            content = result["choices"][0]["message"]["content"].strip()
+            # Extract JSON from response
+            json_match = re.search(r'\{.*\}', content, re.DOTALL)
+            if json_match:
+                parsed = json.loads(json_match.group())
+                return parsed
+        return {
+            "summary": "Summary unavailable.",
+            "pros": [],
+            "cons": [],
+            "verdict": "Please try again."
+        }
     except Exception as e:
-        return f"Summarization error: {str(e)}"
+        print(f"Groq error: {e}")
+        return {
+            "summary": f"Error: {str(e)}",
+            "pros": [],
+            "cons": [],
+            "verdict": "Error occurred."
+        }
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -123,13 +182,21 @@ def summarize():
     if not reviews:
         return jsonify({"error": "No reviews found for this product."}), 404
 
-    summary = summarize_reviews(reviews)
+    analysis = analyze_reviews(reviews)
+    sentiment = calculate_sentiment(reviews)
+    highlights = get_highlights(reviews)
 
     return jsonify({
         "title": product["title"],
         "rating": product["rating"],
         "image": product["image"],
-        "summary": summary
+        "ratings_total": product["ratings_total"],
+        "summary": analysis.get("summary", ""),
+        "pros": analysis.get("pros", []),
+        "cons": analysis.get("cons", []),
+        "verdict": analysis.get("verdict", ""),
+        "sentiment": sentiment,
+        "highlights": highlights
     })
 
 if __name__ == "__main__":

@@ -4,23 +4,23 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SynthReview — AI Product Intelligence</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
 <style>
   :root {
     --bg: #0a0a0a;
     --surface: #111111;
+    --surface2: #161616;
     --border: #222222;
     --gold: #c9a84c;
     --gold-dim: #8a6f2e;
     --text: #e8e0d0;
     --text-dim: #6b6358;
     --white: #f5f0e8;
-    --error: #c0392b;
-    --success: #2ecc71;
+    --green: #4caf7d;
+    --red: #c0574a;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -31,7 +31,6 @@
     overflow-x: hidden;
   }
 
-  /* BACKGROUND TEXTURE */
   body::before {
     content: '';
     position: fixed;
@@ -43,28 +42,17 @@
     z-index: 0;
   }
 
-  /* GRAIN OVERLAY */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-  }
-
   .container {
     position: relative;
     z-index: 1;
-    max-width: 780px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 0 24px;
   }
 
   /* HEADER */
   header {
-    padding: 60px 0 48px;
+    padding: 56px 0 44px;
     text-align: center;
     border-bottom: 1px solid var(--border);
   }
@@ -72,9 +60,9 @@
   .logo-mark {
     display: inline-block;
     width: 2px;
-    height: 32px;
+    height: 28px;
     background: var(--gold);
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     animation: pulse-bar 2s ease-in-out infinite;
   }
 
@@ -85,7 +73,7 @@
 
   .brand {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
     font-weight: 300;
     letter-spacing: 0.18em;
     color: var(--white);
@@ -94,63 +82,41 @@
     line-height: 1;
   }
 
-  .brand span {
-    color: var(--gold);
-  }
-
+  .brand span { color: var(--gold); }
   .tagline {
-    margin-top: 14px;
-    font-size: 0.65rem;
+    margin-top: 12px;
+    font-size: 0.6rem;
     letter-spacing: 0.35em;
     color: var(--text-dim);
     text-transform: uppercase;
   }
 
-  /* DIVIDER */
   .divider {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin: 48px 0;
+    margin: 44px 0;
   }
-
   .divider::before, .divider::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border));
   }
+  .divider::before { background: linear-gradient(90deg, transparent, var(--border)); }
+  .divider::after { background: linear-gradient(90deg, var(--border), transparent); }
+  .divider-icon { color: var(--gold-dim); font-size: 0.5rem; }
 
-  .divider::after {
-    background: linear-gradient(90deg, var(--border), transparent);
-  }
-
-  .divider-icon {
-    color: var(--gold-dim);
-    font-size: 0.55rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-  }
-
-  /* INPUT SECTION */
-  .input-section {
-    margin-bottom: 40px;
-  }
-
+  /* INPUT */
   .input-label {
     display: block;
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--text-dim);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
-  .input-wrapper {
-    position: relative;
-    display: flex;
-    gap: 0;
-  }
+  .input-wrapper { display: flex; margin-bottom: 40px; }
 
   .url-input {
     flex: 1;
@@ -159,65 +125,41 @@
     border-right: none;
     color: var(--text);
     font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    padding: 18px 20px;
+    font-size: 0.75rem;
+    padding: 16px 18px;
     outline: none;
     transition: border-color 0.3s;
-    letter-spacing: 0.02em;
   }
-
-  .url-input::placeholder {
-    color: var(--text-dim);
-    font-size: 0.72rem;
-  }
-
-  .url-input:focus {
-    border-color: var(--gold-dim);
-  }
+  .url-input::placeholder { color: var(--text-dim); font-size: 0.7rem; }
+  .url-input:focus { border-color: var(--gold-dim); }
 
   .submit-btn {
     background: var(--gold);
     border: 1px solid var(--gold);
     color: #0a0a0a;
     font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    font-weight: 400;
+    font-size: 0.58rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    padding: 18px 28px;
+    padding: 16px 26px;
     cursor: pointer;
     transition: all 0.3s;
     white-space: nowrap;
   }
+  .submit-btn:hover { background: var(--white); border-color: var(--white); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .submit-btn:hover {
-    background: var(--white);
-    border-color: var(--white);
-  }
-
-  .submit-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  /* LOADING STATE */
-  .loading {
-    display: none;
-    text-align: center;
-    padding: 48px 0;
-  }
-
+  /* LOADING */
+  .loading { display: none; text-align: center; padding: 44px 0; }
   .loading.active { display: block; }
-
   .loading-bars {
     display: flex;
     justify-content: center;
     align-items: flex-end;
     gap: 5px;
-    height: 32px;
-    margin-bottom: 20px;
+    height: 28px;
+    margin-bottom: 16px;
   }
-
   .loading-bars span {
     display: block;
     width: 3px;
@@ -225,92 +167,53 @@
     animation: bar-dance 1.2s ease-in-out infinite;
     border-radius: 2px;
   }
-
-  .loading-bars span:nth-child(1) { animation-delay: 0s; height: 12px; }
-  .loading-bars span:nth-child(2) { animation-delay: 0.15s; height: 20px; }
-  .loading-bars span:nth-child(3) { animation-delay: 0.3s; height: 28px; }
-  .loading-bars span:nth-child(4) { animation-delay: 0.45s; height: 20px; }
-  .loading-bars span:nth-child(5) { animation-delay: 0.6s; height: 12px; }
-
+  .loading-bars span:nth-child(1) { animation-delay: 0s; height: 10px; }
+  .loading-bars span:nth-child(2) { animation-delay: 0.15s; height: 18px; }
+  .loading-bars span:nth-child(3) { animation-delay: 0.3s; height: 26px; }
+  .loading-bars span:nth-child(4) { animation-delay: 0.45s; height: 18px; }
+  .loading-bars span:nth-child(5) { animation-delay: 0.6s; height: 10px; }
   @keyframes bar-dance {
     0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
     50% { transform: scaleY(1); opacity: 1; }
   }
-
-  .loading-text {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
+  .loading-text { font-size: 0.58rem; letter-spacing: 0.3em; color: var(--text-dim); text-transform: uppercase; }
 
   /* ERROR */
-  .error-msg {
-    display: none;
-    background: rgba(192, 57, 43, 0.08);
-    border: 1px solid rgba(192, 57, 43, 0.3);
-    color: #e74c3c;
-    padding: 14px 18px;
-    font-size: 0.72rem;
-    letter-spacing: 0.05em;
-    margin-top: 12px;
-  }
-
+  .error-msg { display: none; background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.3); color: #e74c3c; padding: 12px 16px; font-size: 0.7rem; margin-top: 10px; }
   .error-msg.active { display: block; }
 
-  /* RESULT CARD */
-  .result {
-    display: none;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  }
+  /* RESULT */
+  .result { display: none; opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .result.active { display: block; opacity: 1; transform: translateY(0); }
 
-  .result.active {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-  }
-
+  /* PRODUCT HEADER */
   .product-header {
     display: flex;
-    gap: 24px;
+    gap: 20px;
     align-items: flex-start;
-    margin-bottom: 32px;
-    padding-bottom: 28px;
+    padding-bottom: 24px;
     border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
   }
-
   .product-image {
-    width: 80px;
-    height: 80px;
+    width: 88px;
+    height: 88px;
     object-fit: contain;
     background: var(--surface);
     border: 1px solid var(--border);
     flex-shrink: 0;
     padding: 8px;
   }
-
   .product-image.hidden { display: none; }
-
-  .product-info { flex: 1; }
-
   .product-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 400;
     color: var(--white);
     line-height: 1.4;
-    margin-bottom: 12px;
-    letter-spacing: 0.02em;
+    margin-bottom: 10px;
   }
-
-  .rating-display {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
+  .rating-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .rating-number {
     font-family: 'Cormorant Garamond', serif;
     font-size: 2rem;
@@ -318,97 +221,164 @@
     color: var(--gold);
     line-height: 1;
   }
-
-  .rating-stars {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .stars {
-    display: flex;
-    gap: 2px;
-  }
-
+  .stars { display: flex; gap: 3px; }
   .star {
-    width: 10px;
-    height: 10px;
+    width: 10px; height: 10px;
     background: var(--gold);
-    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-    transition: background 0.2s;
+    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
   }
-
   .star.empty { background: var(--border); }
+  .rating-label { font-size: 0.52rem; letter-spacing: 0.22em; color: var(--text-dim); text-transform: uppercase; }
 
-  .rating-label {
-    font-size: 0.55rem;
-    letter-spacing: 0.25em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
-
-  /* SUMMARY */
-  .summary-section { }
-
-  .summary-label {
-    font-size: 0.55rem;
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 0.52rem;
     letter-spacing: 0.35em;
     text-transform: uppercase;
     color: var(--gold-dim);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 10px;
   }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .summary-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
+  /* SUMMARY */
   .summary-text {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 300;
     line-height: 1.85;
     color: var(--text);
-    letter-spacing: 0.02em;
+    margin-bottom: 28px;
   }
+
+  /* SENTIMENT METER */
+  .sentiment-block { margin-bottom: 28px; }
+  .sentiment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .sentiment-pct {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--green);
+  }
+  .sentiment-neg {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--red);
+  }
+  .meter-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--gold));
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.16,1,0.3,1);
+    width: 0%;
+  }
+  .meter-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+  .meter-labels span { font-size: 0.5rem; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; }
+
+  /* PROS CONS */
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 560px) { .pros-cons { grid-template-columns: 1fr; } }
+
+  .pros-box, .cons-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 18px;
+  }
+  .pros-box { border-top: 2px solid var(--green); }
+  .cons-box { border-top: 2px solid var(--red); }
+
+  .box-title {
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .pros-box .box-title { color: var(--green); }
+  .cons-box .box-title { color: var(--red); }
+
+  .pros-list, .cons-list { list-style: none; }
+  .pros-list li, .cons-list li {
+    font-size: 0.72rem;
+    line-height: 1.6;
+    color: var(--text);
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .pros-list li:last-child, .cons-list li:last-child { border-bottom: none; }
+  .pros-list li::before { content: '+'; color: var(--green); flex-shrink: 0; font-weight: bold; }
+  .cons-list li::before { content: '−'; color: var(--red); flex-shrink: 0; font-weight: bold; }
+
+  /* VERDICT */
+  .verdict-box {
+    background: var(--surface2);
+    border: 1px solid var(--gold-dim);
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .verdict-icon { color: var(--gold); font-size: 1rem; flex-shrink: 0; }
+  .verdict-label { font-size: 0.5rem; letter-spacing: 0.25em; color: var(--gold-dim); text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .verdict-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--white);
+    line-height: 1.4;
+  }
+
+  /* HIGHLIGHTS */
+  .highlights-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .highlight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold-dim);
+    padding: 14px 16px;
+  }
+  .highlight-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .highlight-title { font-size: 0.72rem; color: var(--white); font-weight: 400; }
+  .highlight-stars { font-size: 0.6rem; color: var(--gold); letter-spacing: 2px; }
+  .highlight-comment { font-size: 0.68rem; color: var(--text-dim); line-height: 1.6; font-style: italic; }
 
   /* FOOTER */
-  footer {
-    text-align: center;
-    padding: 48px 0 36px;
-    border-top: 1px solid var(--border);
-    margin-top: 64px;
-  }
+  footer { text-align: center; padding: 44px 0 32px; border-top: 1px solid var(--border); margin-top: 56px; }
+  .footer-text { font-size: 0.52rem; letter-spacing: 0.28em; color: var(--text-dim); text-transform: uppercase; }
 
-  .footer-text {
-    font-size: 0.55rem;
-    letter-spacing: 0.3em;
-    color: var(--text-dim);
-    text-transform: uppercase;
-  }
-
-  /* ANIMATE IN */
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(16px); }
+    from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  .animate-in {
-    animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
+  .animate-in { animation: fade-up 0.7s cubic-bezier(0.16,1,0.3,1) both; }
   .delay-1 { animation-delay: 0.1s; }
   .delay-2 { animation-delay: 0.2s; }
-  .delay-3 { animation-delay: 0.35s; }
 </style>
 </head>
 <body>
-
 <div class="container">
 
   <header class="animate-in">
@@ -417,24 +387,15 @@
     <p class="tagline">AI-Powered Product Intelligence</p>
   </header>
 
-  <div class="divider animate-in delay-1">
-    <span class="divider-icon">◆</span>
-  </div>
+  <div class="divider animate-in delay-1"><span class="divider-icon">◆</span></div>
 
-  <div class="input-section animate-in delay-2">
+  <div class="animate-in delay-2">
     <label class="input-label" for="urlInput">Amazon Product URL</label>
     <div class="input-wrapper">
-      <input
-        type="text"
-        id="urlInput"
-        class="url-input"
+      <input type="text" id="urlInput" class="url-input"
         placeholder="https://www.amazon.in/dp/B08N5WRWNW"
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
-        Analyse
-      </button>
+        autocomplete="off" spellcheck="false"/>
+      <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Analyse</button>
     </div>
     <div class="error-msg" id="errorMsg"></div>
   </div>
@@ -448,29 +409,69 @@
 
   <div class="result" id="result">
 
+    <!-- PRODUCT HEADER -->
     <div class="product-header">
       <img id="productImage" class="product-image hidden" src="" alt="Product"/>
-      <div class="product-info">
+      <div>
         <h2 class="product-title" id="productTitle"></h2>
-        <div class="rating-display">
+        <div class="rating-row">
           <div class="rating-number" id="ratingNumber"></div>
-          <div class="rating-stars">
-            <div class="stars" id="starsDisplay"></div>
-            <div class="rating-label">Overall Rating</div>
-          </div>
+          <div class="stars" id="starsDisplay"></div>
+          <div class="rating-label">Overall Rating</div>
         </div>
       </div>
     </div>
 
-    <div class="summary-section">
-      <div class="summary-label">AI Summary</div>
-      <p class="summary-text" id="summaryText"></p>
+    <!-- SUMMARY -->
+    <div class="section-label">AI Summary</div>
+    <p class="summary-text" id="summaryText"></p>
+
+    <!-- SENTIMENT METER -->
+    <div class="sentiment-block">
+      <div class="section-label">Sentiment Analysis</div>
+      <div class="sentiment-header">
+        <span class="sentiment-pct" id="positivePct"></span>
+        <span class="sentiment-neg" id="negativePct"></span>
+      </div>
+      <div class="meter-track">
+        <div class="meter-fill" id="meterFill"></div>
+      </div>
+      <div class="meter-labels">
+        <span>Positive</span>
+        <span>Negative</span>
+      </div>
     </div>
+
+    <!-- PROS AND CONS -->
+    <div class="section-label">Pros & Cons</div>
+    <div class="pros-cons">
+      <div class="pros-box">
+        <div class="box-title">What people love</div>
+        <ul class="pros-list" id="prosList"></ul>
+      </div>
+      <div class="cons-box">
+        <div class="box-title">What people dislike</div>
+        <ul class="cons-list" id="consList"></ul>
+      </div>
+    </div>
+
+    <!-- VERDICT -->
+    <div class="verdict-box">
+      <div class="verdict-icon">◆</div>
+      <div>
+        <span class="verdict-label">Verdict</span>
+        <div class="verdict-text" id="verdictText"></div>
+      </div>
+    </div>
+
+    <!-- REVIEW HIGHLIGHTS -->
+    <div class="section-label">Review Highlights</div>
+    <div class="highlights-list" id="highlightsList"></div>
 
   </div>
 
   <footer>
-    <p class="footer-text">SynthReview &nbsp;·&nbsp; Powered by T5 &nbsp;·&nbsp; Amazon Reviews API</p>
+    <p class="footer-text">SynthReview &nbsp;·&nbsp; AI Product Intelligence &nbsp;·&nbsp; Amazon Reviews API</p>
   </footer>
 
 </div>
@@ -479,8 +480,8 @@
   const loadingMessages = [
     "Fetching reviews",
     "Analysing sentiment",
-    "Synthesising insights",
-    "Crafting summary"
+    "Extracting pros & cons",
+    "Crafting verdict"
   ];
 
   function showLoading() {
@@ -503,6 +504,41 @@
     }
   }
 
+  function renderList(items, containerId, emptyMsg) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    if (!items || items.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = emptyMsg;
+      container.appendChild(li);
+      return;
+    }
+    items.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      container.appendChild(li);
+    });
+  }
+
+  function renderHighlights(highlights) {
+    const container = document.getElementById("highlightsList");
+    container.innerHTML = "";
+    if (!highlights || highlights.length === 0) return;
+    highlights.forEach(h => {
+      const stars = "★".repeat(parseInt(h.stars) || 0) + "☆".repeat(5 - (parseInt(h.stars) || 0));
+      const card = document.createElement("div");
+      card.className = "highlight-card";
+      card.innerHTML = `
+        <div class="highlight-header">
+          <span class="highlight-title">${h.title}</span>
+          <span class="highlight-stars">${stars}</span>
+        </div>
+        <div class="highlight-comment">"${h.comment}"</div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
   async function handleSubmit() {
     const url = document.getElementById("urlInput").value.trim();
     const btn = document.getElementById("submitBtn");
@@ -510,7 +546,6 @@
     const loadingEl = document.getElementById("loading");
     const resultEl = document.getElementById("result");
 
-    // Reset
     errorEl.classList.remove("active");
     resultEl.classList.remove("active");
     resultEl.style.display = "none";
@@ -533,7 +568,6 @@
       });
 
       const data = await res.json();
-
       clearInterval(interval);
       loadingEl.classList.remove("active");
 
@@ -543,12 +577,26 @@
         return;
       }
 
-      // Populate result
+      // Populate all fields
       document.getElementById("productTitle").textContent = data.title;
       document.getElementById("ratingNumber").textContent = data.rating;
       document.getElementById("summaryText").textContent = data.summary;
-      renderStars(data.rating);
+      document.getElementById("verdictText").textContent = data.verdict;
 
+      renderStars(data.rating);
+      renderList(data.pros, "prosList", "No pros found");
+      renderList(data.cons, "consList", "No cons found");
+      renderHighlights(data.highlights);
+
+      // Sentiment meter
+      const pct = data.sentiment || 50;
+      document.getElementById("positivePct").textContent = pct + "% Positive";
+      document.getElementById("negativePct").textContent = (100 - pct) + "% Negative";
+      setTimeout(() => {
+        document.getElementById("meterFill").style.width = pct + "%";
+      }, 100);
+
+      // Product image
       const img = document.getElementById("productImage");
       if (data.image) {
         img.src = data.image;
@@ -557,7 +605,6 @@
         img.classList.add("hidden");
       }
 
-      // Show result with animation
       resultEl.style.display = "block";
       setTimeout(() => resultEl.classList.add("active"), 10);
 
@@ -571,11 +618,9 @@
     }
   }
 
-  // Enter key support
   document.getElementById("urlInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleSubmit();
   });
 </script>
-
 </body>
 </html>
