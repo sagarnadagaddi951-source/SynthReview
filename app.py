@@ -84,7 +84,7 @@ def summarize_reviews(reviews):
         "messages": [
             {
                 "role": "user",
-                "content": f"Summarize these product reviews in 3-4 sentences covering the key positives and negatives:\n\n{combined}"
+                "content": f"Summarize these product reviews in 3-4 sentences covering key positives and negatives:\n\n{combined}"
             }
         ],
         "max_tokens": 200
@@ -92,7 +92,13 @@ def summarize_reviews(reviews):
     try:
         response = requests.post(url, headers=headers, json=payload, timeout=30)
         result = response.json()
-        return result["choices"][0]["message"]["content"]
+        print("GROQ RESPONSE:", result)  # for debugging
+        if "choices" in result:
+            return result["choices"][0]["message"]["content"]
+        elif "error" in result:
+            return f"API error: {result['error']['message']}"
+        else:
+            return "Summary could not be generated. Please try again."
     except Exception as e:
         return f"Summarization error: {str(e)}"
 @app.route("/")
