@@ -4,20 +4,27 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SynthReview — AI Product Intelligence</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #111111;
-    --surface2: #161616;
-    --border: #222222;
-    --gold: #c9a84c;
-    --gold-dim: #8a6f2e;
-    --text: #e8e0d0;
-    --text-dim: #6b6358;
-    --white: #f5f0e8;
-    --green: #4caf7d;
-    --red: #c0574a;
+    --bg: #ffffff;
+    --bg2: #f8f8f8;
+    --surface: #ffffff;
+    --border: #e8e8e8;
+    --border2: #d0d0d0;
+    --text: #111111;
+    --text-mid: #444444;
+    --text-dim: #999999;
+    --accent: #111111;
+    --green: #00875a;
+    --green-bg: #f0faf5;
+    --red: #c0392b;
+    --red-bg: #fdf3f2;
+    --yellow: #b8860b;
+    --yellow-bg: #fdfaf0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.06);
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,343 +33,569 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'DM Mono', monospace;
+    font-family: 'Inter', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  body::before {
-    content: '';
+  /* PARTICLE CANVAS */
+  #particleCanvas {
     position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.07) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 90% 90%, rgba(201,168,76,0.04) 0%, transparent 60%);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     pointer-events: none;
     z-index: 0;
+    opacity: 0.4;
   }
 
   .container {
     position: relative;
     z-index: 1;
-    max-width: 800px;
+    max-width: 860px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 28px;
   }
 
-  header {
-    padding: 56px 0 44px;
-    text-align: center;
+  /* NAVBAR */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
+    padding: 0 28px;
   }
-
-  .logo-mark {
-    display: inline-block;
-    width: 2px;
-    height: 28px;
-    background: var(--gold);
-    margin-bottom: 24px;
-    animation: pulse-bar 2s ease-in-out infinite;
+  .nav-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
-
-  @keyframes pulse-bar {
-    0%, 100% { opacity: 1; transform: scaleY(1); }
-    50% { opacity: 0.4; transform: scaleY(0.6); }
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text);
   }
-
-  .brand {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2.2rem, 6vw, 3.6rem);
-    font-weight: 300;
-    letter-spacing: 0.18em;
-    color: var(--white);
+  .nav-brand span { font-style: italic; font-weight: 400; }
+  .nav-tag {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    display: block;
-    line-height: 1;
+    color: var(--text-dim);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
   }
-  .brand span { color: var(--gold); }
-  .tagline { margin-top: 12px; font-size: 0.6rem; letter-spacing: 0.35em; color: var(--text-dim); text-transform: uppercase; }
 
-  .divider { display: flex; align-items: center; gap: 16px; margin: 44px 0; }
-  .divider::before { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--border)); }
-  .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
-  .divider-icon { color: var(--gold-dim); font-size: 0.5rem; }
+  /* HERO */
+  .hero {
+    padding: 100px 0 72px;
+    text-align: center;
+  }
 
-  .input-label { display: block; font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
-  .input-wrapper { display: flex; margin-bottom: 12px; }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    margin-bottom: 32px;
+    animation: fade-up 0.6s ease both;
+  }
+  .eyebrow-dot {
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: blink 2s ease infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 24px;
+    animation: fade-up 0.6s 0.1s ease both;
+  }
+  .hero-title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text-mid);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: var(--text-mid);
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 0 auto 48px;
+    animation: fade-up 0.6s 0.2s ease both;
+  }
+
+  /* SEARCH CARD */
+  .search-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: var(--shadow-lg);
+    max-width: 620px;
+    margin: 0 auto;
+    animation: fade-up 0.6s 0.3s ease both;
+  }
+
+  .search-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .search-row { display: flex; gap: 10px; }
+
   .url-input {
     flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-right: none;
+    background: var(--bg2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
     color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    padding: 16px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    padding: 14px 18px;
     outline: none;
-    transition: border-color 0.3s;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .url-input::placeholder { color: var(--text-dim); font-size: 0.7rem; }
-  .url-input:focus { border-color: var(--gold-dim); }
+  .url-input::placeholder { color: var(--text-dim); }
+  .url-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+    background: var(--surface);
+  }
+
   .submit-btn {
-    background: var(--gold);
-    border: 1px solid var(--gold);
-    color: #0a0a0a;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    padding: 16px 26px;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 14px 24px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
     white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
-  .submit-btn:hover { background: var(--white); border-color: var(--white); }
-  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .submit-btn:hover { background: #333; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .error-msg {
+    display: none;
+    background: var(--red-bg);
+    border: 1px solid rgba(192,57,43,0.2);
+    color: var(--red);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    margin-top: 10px;
+  }
+  .error-msg.active { display: block; }
 
   /* HISTORY */
-  .history-section { margin-bottom: 32px; display: none; }
+  .history-section { display: none; margin-top: 16px; }
   .history-section.active { display: block; }
-  .history-label { font-size: 0.52rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
-  .history-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .history-label { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .history-list { display: flex; flex-wrap: wrap; gap: 6px; }
   .history-item {
-    background: var(--surface);
+    background: var(--bg2);
     border: 1px solid var(--border);
-    padding: 6px 12px;
-    font-size: 0.62rem;
-    color: var(--text-dim);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.65rem;
+    color: var(--text-mid);
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     align-items: center;
-    gap: 8px;
-    max-width: 220px;
+    gap: 6px;
+    max-width: 200px;
   }
-  .history-item:hover { border-color: var(--gold-dim); color: var(--text); }
+  .history-item:hover { border-color: var(--accent); color: var(--text); background: var(--surface); }
   .history-item-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .history-item-rating { color: var(--gold); flex-shrink: 0; }
+  .history-item-rating { color: #f59e0b; flex-shrink: 0; font-weight: 600; }
 
-  .loading { display: none; text-align: center; padding: 44px 0; }
-  .loading.active { display: block; }
-  .loading-bars { display: flex; justify-content: center; align-items: flex-end; gap: 5px; height: 28px; margin-bottom: 16px; }
-  .loading-bars span { display: block; width: 3px; background: var(--gold); animation: bar-dance 1.2s ease-in-out infinite; border-radius: 2px; }
-  .loading-bars span:nth-child(1) { animation-delay: 0s; height: 10px; }
-  .loading-bars span:nth-child(2) { animation-delay: 0.15s; height: 18px; }
-  .loading-bars span:nth-child(3) { animation-delay: 0.3s; height: 26px; }
-  .loading-bars span:nth-child(4) { animation-delay: 0.45s; height: 18px; }
-  .loading-bars span:nth-child(5) { animation-delay: 0.6s; height: 10px; }
-  @keyframes bar-dance {
-    0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
-    50% { transform: scaleY(1); opacity: 1; }
+  /* STATS ROW */
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 60px;
+    padding-top: 48px;
+    border-top: 1px solid var(--border);
+    animation: fade-up 0.6s 0.4s ease both;
   }
-  .loading-text { font-size: 0.58rem; letter-spacing: 0.3em; color: var(--text-dim); text-transform: uppercase; }
+  .stat { text-align: center; }
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+  }
+  .stat-label { font-size: 0.65rem; color: var(--text-dim); font-weight: 500; letter-spacing: 0.05em; }
 
-  .error-msg { display: none; background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.3); color: #e74c3c; padding: 12px 16px; font-size: 0.7rem; margin-top: 10px; }
-  .error-msg.active { display: block; }
+  /* LOADING */
+  .loading { display: none; text-align: center; padding: 60px 0; }
+  .loading.active { display: block; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 0.72rem; color: var(--text-dim); font-weight: 500; letter-spacing: 0.05em; }
+  .loading-sub { font-size: 0.62rem; color: var(--text-dim); margin-top: 6px; }
 
-  .result { display: none; opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.16,1,0.3,1); }
+  /* RESULT */
+  .result { display: none; opacity: 0; transform: translateY(24px); transition: all 0.5s cubic-bezier(0.16,1,0.3,1); margin-top: 48px; }
   .result.active { display: block; opacity: 1; transform: translateY(0); }
 
-  /* PRODUCT HEADER */
-  .product-header { display: flex; gap: 20px; align-items: flex-start; padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
-  .product-image { width: 88px; height: 88px; object-fit: contain; background: var(--surface); border: 1px solid var(--border); flex-shrink: 0; padding: 8px; }
+  /* PRODUCT CARD */
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 20px;
+  }
+
+  .product-top { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px; }
+  .product-image {
+    width: 96px; height: 96px;
+    object-fit: contain;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    flex-shrink: 0;
+    padding: 8px;
+  }
   .product-image.hidden { display: none; }
   .product-info { flex: 1; }
-  .product-title { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; color: var(--white); line-height: 1.4; margin-bottom: 10px; }
-
-  .product-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
-  .rating-number { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; color: var(--gold); line-height: 1; }
-  .stars { display: flex; gap: 3px; }
-  .star { width: 10px; height: 10px; background: var(--gold); clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); }
-  .star.empty { background: var(--border); }
-  .rating-label { font-size: 0.52rem; letter-spacing: 0.22em; color: var(--text-dim); text-transform: uppercase; }
-
-  .price-badge {
-    background: var(--surface2);
-    border: 1px solid var(--gold-dim);
-    padding: 5px 12px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
-    color: var(--gold);
-    letter-spacing: 0.05em;
+  .product-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.35;
+    margin-bottom: 12px;
   }
-
-  /* BUY/SKIP BADGE */
-  .decision-badge {
-    display: inline-flex;
+  .product-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .rating-pill {
+    display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    margin-bottom: 28px;
-    font-size: 0.7rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    font-weight: 400;
-    border: 1px solid;
+    gap: 6px;
+    background: #fff8e6;
+    border: 1px solid #f0d060;
+    border-radius: 20px;
+    padding: 5px 12px;
   }
-  .decision-badge.buy {
-    background: rgba(76,175,125,0.1);
-    border-color: var(--green);
-    color: var(--green);
-  }
-  .decision-badge.skip {
-    background: rgba(192,87,74,0.1);
-    border-color: var(--red);
-    color: var(--red);
-  }
-  .decision-badge .badge-icon { font-size: 1rem; }
-  .decision-badge .badge-label { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-style: italic; }
-
-  .section-label { font-size: 0.52rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
-  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  .summary-text { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; line-height: 1.85; color: var(--text); margin-bottom: 28px; }
-
-  /* SHARE BUTTON */
-  .share-row { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
-  .share-btn {
-    background: transparent;
+  .rating-number { font-size: 0.9rem; font-weight: 700; color: #b8860b; }
+  .stars { display: flex; gap: 2px; }
+  .star { font-size: 0.65rem; color: #f59e0b; }
+  .star.empty { color: #d0d0d0; }
+  .price-pill {
+    background: var(--bg2);
     border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.56rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    padding: 10px 16px;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* DECISION BADGE */
+  .decision-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: 14px;
+    border: 1.5px solid;
+  }
+  .decision-badge.buy { background: var(--green-bg); border-color: rgba(0,135,90,0.25); }
+  .decision-badge.consider { background: var(--yellow-bg); border-color: rgba(184,134,11,0.25); }
+  .decision-badge.skip { background: var(--red-bg); border-color: rgba(192,57,43,0.25); }
+  .badge-icon-wrap {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .buy .badge-icon-wrap { background: rgba(0,135,90,0.15); }
+  .consider .badge-icon-wrap { background: rgba(184,134,11,0.15); }
+  .skip .badge-icon-wrap { background: rgba(192,57,43,0.15); }
+  .badge-content { flex: 1; }
+  .badge-verdict { font-size: 0.95rem; font-weight: 700; }
+  .buy .badge-verdict { color: var(--green); }
+  .consider .badge-verdict { color: var(--yellow); }
+  .skip .badge-verdict { color: var(--red); }
+  .badge-reason { font-size: 0.72rem; color: var(--text-mid); margin-top: 2px; }
+
+  /* SHARE ROW */
+  .share-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .share-btn {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-mid);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    padding: 8px 14px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .share-btn:hover { border-color: var(--accent); color: var(--text); background: var(--surface); box-shadow: var(--shadow-sm); }
+  .share-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+
+  /* CONTENT CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+  }
+  .card-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
-  .share-btn:hover { border-color: var(--gold-dim); color: var(--text); }
-  .share-btn.copied { border-color: var(--green); color: var(--green); }
+  .card-label-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .summary-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1.8;
+    color: var(--text-mid);
+  }
 
   /* SENTIMENT */
-  .sentiment-block { margin-bottom: 28px; }
-  .sentiment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .sentiment-pct { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--green); }
-  .sentiment-neg { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--red); }
-  .meter-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .meter-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--gold)); border-radius: 2px; transition: width 1s cubic-bezier(0.16,1,0.3,1); width: 0%; }
+  .sentiment-numbers { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .sentiment-pos { font-size: 0.8rem; font-weight: 700; color: var(--green); }
+  .sentiment-neg { font-size: 0.8rem; font-weight: 700; color: var(--red); }
+  .meter-track { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
+  .meter-fill { height: 100%; background: linear-gradient(90deg, var(--green), #6fcf97); border-radius: 3px; transition: width 1.2s cubic-bezier(0.16,1,0.3,1); width: 0%; }
   .meter-labels { display: flex; justify-content: space-between; margin-top: 6px; }
-  .meter-labels span { font-size: 0.5rem; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; }
+  .meter-labels span { font-size: 0.58rem; color: var(--text-dim); font-weight: 500; }
 
   /* PROS CONS */
-  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
-  @media (max-width: 560px) { .pros-cons { grid-template-columns: 1fr; } }
-  .pros-box, .cons-box { background: var(--surface); border: 1px solid var(--border); padding: 18px; }
-  .pros-box { border-top: 2px solid var(--green); }
-  .cons-box { border-top: 2px solid var(--red); }
-  .box-title { font-size: 0.52rem; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 12px; }
-  .pros-box .box-title { color: var(--green); }
-  .cons-box .box-title { color: var(--red); }
-  .pros-list, .cons-list { list-style: none; }
-  .pros-list li, .cons-list li { font-size: 0.72rem; line-height: 1.6; color: var(--text); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-start; }
-  .pros-list li:last-child, .cons-list li:last-child { border-bottom: none; }
-  .pros-list li::before { content: '+'; color: var(--green); flex-shrink: 0; font-weight: bold; }
-  .cons-list li::before { content: '−'; color: var(--red); flex-shrink: 0; font-weight: bold; }
+  .pros-cons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 540px) { .pros-cons-grid { grid-template-columns: 1fr; } }
+  .pros-box, .cons-box { border-radius: 14px; padding: 18px; }
+  .pros-box { background: var(--green-bg); border: 1px solid rgba(0,135,90,0.15); }
+  .cons-box { background: var(--red-bg); border: 1px solid rgba(192,57,43,0.15); }
+  .box-header { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+  .pros-box .box-header { color: var(--green); }
+  .cons-box .box-header { color: var(--red); }
+  .item-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .item-list li { font-size: 0.78rem; color: var(--text-mid); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
+  .item-list li .dot { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .pros-box .dot { background: rgba(0,135,90,0.15); color: var(--green); }
+  .cons-box .dot { background: rgba(192,57,43,0.15); color: var(--red); }
 
   /* VERDICT */
-  .verdict-box { background: var(--surface2); border: 1px solid var(--gold-dim); padding: 16px 20px; margin-bottom: 28px; display: flex; gap: 14px; align-items: center; }
-  .verdict-icon { color: var(--gold); font-size: 1rem; flex-shrink: 0; }
-  .verdict-label { font-size: 0.5rem; letter-spacing: 0.25em; color: var(--gold-dim); text-transform: uppercase; display: block; margin-bottom: 4px; }
-  .verdict-text { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-style: italic; color: var(--white); line-height: 1.4; }
+  .verdict-card {
+    background: var(--text);
+    border-radius: 16px;
+    padding: 22px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .verdict-icon-wrap { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .verdict-label { font-size: 0.58rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+  .verdict-text { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: #ffffff; line-height: 1.45; }
 
   /* HIGHLIGHTS */
-  .highlights-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-  .highlight-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--gold-dim); padding: 14px 16px; }
-  .highlight-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .highlight-title { font-size: 0.72rem; color: var(--white); }
-  .highlight-stars { font-size: 0.6rem; color: var(--gold); letter-spacing: 2px; }
-  .highlight-comment { font-size: 0.68rem; color: var(--text-dim); line-height: 1.6; font-style: italic; }
+  .highlights-stack { display: flex; flex-direction: column; gap: 10px; }
+  .highlight-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    transition: box-shadow 0.2s;
+  }
+  .highlight-card:hover { box-shadow: var(--shadow-sm); }
+  .highlight-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .highlight-title { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+  .highlight-stars { font-size: 0.65rem; letter-spacing: 1px; }
+  .highlight-comment { font-size: 0.72rem; color: var(--text-mid); line-height: 1.6; font-style: italic; }
 
-  footer { text-align: center; padding: 44px 0 32px; border-top: 1px solid var(--border); margin-top: 56px; }
-  .footer-text { font-size: 0.52rem; letter-spacing: 0.28em; color: var(--text-dim); text-transform: uppercase; }
+  /* FOOTER */
+  footer { text-align: center; padding: 48px 0 36px; border-top: 1px solid var(--border); margin-top: 56px; }
+  .footer-brand { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .footer-text { font-size: 0.62rem; color: var(--text-dim); font-weight: 400; letter-spacing: 0.05em; }
 
-  @keyframes fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-  .animate-in { animation: fade-up 0.7s cubic-bezier(0.16,1,0.3,1) both; }
-  .delay-1 { animation-delay: 0.1s; }
-  .delay-2 { animation-delay: 0.2s; }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
 </head>
 <body>
+
+<canvas id="particleCanvas"></canvas>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">Synth<span>Review</span></div>
+    <div class="nav-tag">AI Product Intelligence</div>
+  </div>
+</nav>
+
 <div class="container">
 
-  <header class="animate-in">
-    <div class="logo-mark"></div>
-    <span class="brand">Synth<span>Review</span></span>
-    <p class="tagline">AI-Powered Product Intelligence</p>
-  </header>
-
-  <div class="divider animate-in delay-1"><span class="divider-icon">◆</span></div>
-
-  <div class="animate-in delay-2">
-    <label class="input-label" for="urlInput">Amazon Product URL</label>
-    <div class="input-wrapper">
-      <input type="text" id="urlInput" class="url-input"
-        placeholder="https://www.amazon.in/dp/B08N5WRWNW"
-        autocomplete="off" spellcheck="false"/>
-      <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Analyse</button>
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <div class="eyebrow-dot"></div>
+      Powered by AI · Real Amazon Reviews
     </div>
-    <div class="error-msg" id="errorMsg"></div>
+    <h1 class="hero-title">
+      Stop reading<br><em>hundreds of reviews.</em>
+    </h1>
+    <p class="hero-sub">
+      Paste any Amazon product link. Get an instant AI summary, pros & cons, sentiment analysis, and a clear buy or skip verdict.
+    </p>
 
-    <!-- HISTORY -->
-    <div class="history-section" id="historySection">
-      <div class="history-label">Recent Searches</div>
-      <div class="history-list" id="historyList"></div>
+    <div class="search-card">
+      <label class="search-label" for="urlInput">Amazon Product URL</label>
+      <div class="search-row">
+        <input type="text" id="urlInput" class="url-input"
+          placeholder="https://www.amazon.in/dp/B08N5WRWNW"
+          autocomplete="off" spellcheck="false"/>
+        <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Analyse →</button>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="history-section" id="historySection">
+        <div class="history-label">Recent</div>
+        <div class="history-list" id="historyList"></div>
+      </div>
     </div>
-  </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-number">3×</span>
+        <span class="stat-label">Review Sources</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">AI</span>
+        <span class="stat-label">Powered Summary</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">5s</span>
+        <span class="stat-label">Average Analysis</span>
+      </div>
+    </div>
+  </section>
 
   <div class="loading" id="loading">
-    <div class="loading-bars">
-      <span></span><span></span><span></span><span></span><span></span>
-    </div>
-    <p class="loading-text" id="loadingText">Fetching reviews</p>
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Fetching reviews</div>
+    <div class="loading-sub">Analysing sentiment & extracting insights...</div>
   </div>
 
   <div class="result" id="result">
 
-    <!-- PRODUCT HEADER -->
-    <div class="product-header">
-      <img id="productImage" class="product-image hidden" src="" alt="Product"/>
-      <div class="product-info">
-        <h2 class="product-title" id="productTitle"></h2>
-        <div class="product-meta">
-          <div class="rating-number" id="ratingNumber"></div>
-          <div class="stars" id="starsDisplay"></div>
-          <div class="rating-label">Overall Rating</div>
-          <div class="price-badge" id="priceBadge"></div>
+    <!-- PRODUCT CARD -->
+    <div class="product-card">
+      <div class="product-top">
+        <img id="productImage" class="product-image hidden" src="" alt="Product"/>
+        <div class="product-info">
+          <h2 class="product-title" id="productTitle"></h2>
+          <div class="product-meta">
+            <div class="rating-pill">
+              <span class="rating-number" id="ratingNumber"></span>
+              <div class="stars" id="starsDisplay"></div>
+            </div>
+            <div class="price-pill" id="priceBadge"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="decisionBadge" class="decision-badge">
+        <div class="badge-icon-wrap" id="badgeIcon"></div>
+        <div class="badge-content">
+          <div class="badge-verdict" id="badgeVerdict"></div>
+          <div class="badge-reason" id="badgeReason"></div>
         </div>
       </div>
     </div>
 
-    <!-- BUY OR SKIP BADGE -->
-    <div id="decisionBadge" class="decision-badge">
-      <span class="badge-icon" id="badgeIcon"></span>
-      <span class="badge-label" id="badgeLabel"></span>
-      <span id="badgeReason"></span>
-    </div>
-
-    <!-- SHARE BUTTONS -->
+    <!-- SHARE -->
     <div class="share-row">
-      <button class="share-btn" id="copyBtn" onclick="copyToClipboard()">
-        ◈ Copy Summary
-      </button>
-      <button class="share-btn" onclick="shareWhatsApp()">
-        ◈ Share on WhatsApp
-      </button>
+      <button class="share-btn" id="copyBtn" onclick="copyToClipboard()">📋 Copy Summary</button>
+      <button class="share-btn" onclick="shareWhatsApp()">💬 Share on WhatsApp</button>
     </div>
 
     <!-- SUMMARY -->
-    <div class="section-label">AI Summary</div>
-    <p class="summary-text" id="summaryText"></p>
+    <div class="card">
+      <div class="card-label"><div class="card-label-dot"></div>AI Summary</div>
+      <p class="summary-text" id="summaryText"></p>
+    </div>
 
     <!-- SENTIMENT -->
-    <div class="sentiment-block">
-      <div class="section-label">Sentiment Analysis</div>
-      <div class="sentiment-header">
-        <span class="sentiment-pct" id="positivePct"></span>
+    <div class="card">
+      <div class="card-label"><div class="card-label-dot"></div>Sentiment Analysis</div>
+      <div class="sentiment-numbers">
+        <span class="sentiment-pos" id="positivePct"></span>
         <span class="sentiment-neg" id="negativePct"></span>
       </div>
       <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
@@ -370,280 +603,330 @@
     </div>
 
     <!-- PROS CONS -->
-    <div class="section-label">Pros & Cons</div>
-    <div class="pros-cons">
-      <div class="pros-box">
-        <div class="box-title">What people love</div>
-        <ul class="pros-list" id="prosList"></ul>
-      </div>
-      <div class="cons-box">
-        <div class="box-title">What people dislike</div>
-        <ul class="cons-list" id="consList"></ul>
+    <div class="card">
+      <div class="card-label"><div class="card-label-dot"></div>Pros & Cons</div>
+      <div class="pros-cons-grid">
+        <div class="pros-box">
+          <div class="box-header">✓ What people love</div>
+          <ul class="item-list" id="prosList"></ul>
+        </div>
+        <div class="cons-box">
+          <div class="box-header">✕ What people dislike</div>
+          <ul class="item-list" id="consList"></ul>
+        </div>
       </div>
     </div>
 
     <!-- VERDICT -->
-    <div class="verdict-box">
-      <div class="verdict-icon">◆</div>
+    <div class="verdict-card">
+      <div class="verdict-icon-wrap">◆</div>
       <div>
-        <span class="verdict-label">Verdict</span>
+        <div class="verdict-label">Final Verdict</div>
         <div class="verdict-text" id="verdictText"></div>
       </div>
     </div>
 
     <!-- HIGHLIGHTS -->
-    <div class="section-label">Review Highlights</div>
-    <div class="highlights-list" id="highlightsList"></div>
+    <div class="card">
+      <div class="card-label"><div class="card-label-dot"></div>Review Highlights</div>
+      <div class="highlights-stack" id="highlightsList"></div>
+    </div>
 
   </div>
 
   <footer>
-    <p class="footer-text">SynthReview &nbsp;·&nbsp; AI Product Intelligence &nbsp;·&nbsp; Amazon Reviews API</p>
+    <div class="footer-brand">SynthReview</div>
+    <div class="footer-text">AI-Powered Product Intelligence · Real Amazon Reviews · Built with T5 & Groq</div>
   </footer>
 
 </div>
 
 <script>
-  const loadingMessages = [
-    "Fetching reviews",
-    "Analysing sentiment",
-    "Extracting pros & cons",
-    "Crafting verdict"
-  ];
+// ---- PARTICLES ----
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
 
-  let currentData = null;
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
 
-  // ---- HISTORY ----
-  function loadHistory() {
-    try {
-      return JSON.parse(localStorage.getItem("synthreview_history") || "[]");
-    } catch { return []; }
-  }
-
-  function saveToHistory(item) {
-    let history = loadHistory();
-    // Remove duplicate
-    history = history.filter(h => h.url !== item.url);
-    history.unshift(item);
-    history = history.slice(0, 5);
-    localStorage.setItem("synthreview_history", JSON.stringify(history));
-    renderHistory();
-  }
-
-  function renderHistory() {
-    const history = loadHistory();
-    const section = document.getElementById("historySection");
-    const list = document.getElementById("historyList");
-    if (history.length === 0) {
-      section.classList.remove("active");
-      return;
-    }
-    section.classList.add("active");
-    list.innerHTML = "";
-    history.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "history-item";
-      div.innerHTML = `
-        <span class="history-item-title">${item.title}</span>
-        <span class="history-item-rating">★ ${item.rating}</span>
-      `;
-      div.onclick = () => {
-        document.getElementById("urlInput").value = item.url;
-        handleSubmit();
-      };
-      list.appendChild(div);
+function createParticles() {
+  particles = [];
+  const count = Math.floor((window.innerWidth * window.innerHeight) / 18000);
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      radius: Math.random() * 2 + 0.5,
+      opacity: Math.random() * 0.4 + 0.1
     });
   }
+}
 
-  // ---- SHARE ----
-  function copyToClipboard() {
-    if (!currentData) return;
-    const text = `🛍️ ${currentData.title}\n⭐ Rating: ${currentData.rating}/5\n💰 Price: ${currentData.price}\n\n📝 Summary:\n${currentData.summary}\n\n✅ Pros:\n${currentData.pros.map(p => '+ ' + p).join('\n')}\n\n❌ Cons:\n${currentData.cons.map(c => '- ' + c).join('\n')}\n\n🏆 Verdict: ${currentData.verdict}\n\nAnalysed by SynthReview — synthreview.onrender.com`;
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = document.getElementById("copyBtn");
-      btn.textContent = "✓ Copied!";
-      btn.classList.add("copied");
-      setTimeout(() => {
-        btn.textContent = "◈ Copy Summary";
-        btn.classList.remove("copied");
-      }, 2000);
-    });
-  }
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  function shareWhatsApp() {
-    if (!currentData) return;
-    const text = encodeURIComponent(`🛍️ *${currentData.title}*\n⭐ Rating: ${currentData.rating}/5\n💰 Price: ${currentData.price}\n\n📝 *Summary:* ${currentData.summary}\n\n🏆 *Verdict:* ${currentData.verdict}\n\nAnalysed by SynthReview`);
-    window.open(`https://wa.me/?text=${text}`, '_blank');
-  }
-
-  // ---- DECISION BADGE ----
-  function renderDecisionBadge(sentiment) {
-    const badge = document.getElementById("decisionBadge");
-    const icon = document.getElementById("badgeIcon");
-    const label = document.getElementById("badgeLabel");
-    const reason = document.getElementById("badgeReason");
-
-    if (sentiment >= 70) {
-      badge.className = "decision-badge buy";
-      icon.textContent = "✓";
-      label.textContent = "Buy It";
-      reason.textContent = `${sentiment}% of reviewers recommend this product`;
-    } else if (sentiment >= 50) {
-      badge.className = "decision-badge buy";
-      icon.textContent = "~";
-      label.textContent = "Consider It";
-      reason.textContent = `Mixed reviews — read the cons carefully`;
-    } else {
-      badge.className = "decision-badge skip";
-      icon.textContent = "✕";
-      label.textContent = "Skip It";
-      reason.textContent = `${100 - sentiment}% of reviewers had issues`;
-    }
-  }
-
-  // ---- STARS ----
-  function renderStars(rating) {
-    const num = parseFloat(rating);
-    const container = document.getElementById("starsDisplay");
-    container.innerHTML = "";
-    for (let i = 1; i <= 5; i++) {
-      const star = document.createElement("div");
-      star.className = "star" + (i <= Math.round(num) ? "" : " empty");
-      container.appendChild(star);
-    }
-  }
-
-  function renderList(items, containerId, emptyMsg) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = "";
-    if (!items || items.length === 0) {
-      const li = document.createElement("li");
-      li.textContent = emptyMsg;
-      container.appendChild(li);
-      return;
-    }
-    items.forEach(item => {
-      const li = document.createElement("li");
-      li.textContent = item;
-      container.appendChild(li);
-    });
-  }
-
-  function renderHighlights(highlights) {
-    const container = document.getElementById("highlightsList");
-    container.innerHTML = "";
-    if (!highlights || highlights.length === 0) return;
-    highlights.forEach(h => {
-      const filled = "★".repeat(parseInt(h.stars) || 0);
-      const empty = "☆".repeat(5 - (parseInt(h.stars) || 0));
-      const card = document.createElement("div");
-      card.className = "highlight-card";
-      card.innerHTML = `
-        <div class="highlight-header">
-          <span class="highlight-title">${h.title}</span>
-          <span class="highlight-stars">${filled}${empty}</span>
-        </div>
-        <div class="highlight-comment">"${h.comment}"</div>
-      `;
-      container.appendChild(card);
-    });
-  }
-
-  function showLoading() {
-    let i = 0;
-    const el = document.getElementById("loadingText");
-    return setInterval(() => {
-      el.textContent = loadingMessages[i % loadingMessages.length];
-      i++;
-    }, 1800);
-  }
-
-  async function handleSubmit() {
-    const url = document.getElementById("urlInput").value.trim();
-    const btn = document.getElementById("submitBtn");
-    const errorEl = document.getElementById("errorMsg");
-    const loadingEl = document.getElementById("loading");
-    const resultEl = document.getElementById("result");
-
-    errorEl.classList.remove("active");
-    resultEl.classList.remove("active");
-    resultEl.style.display = "none";
-
-    if (!url) {
-      errorEl.textContent = "Please enter an Amazon product URL.";
-      errorEl.classList.add("active");
-      return;
-    }
-
-    btn.disabled = true;
-    loadingEl.classList.add("active");
-    const interval = showLoading();
-
-    try {
-      const res = await fetch("/summarize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url })
-      });
-
-      const data = await res.json();
-      clearInterval(interval);
-      loadingEl.classList.remove("active");
-
-      if (!res.ok || data.error) {
-        errorEl.textContent = data.error || "Something went wrong. Please try again.";
-        errorEl.classList.add("active");
-        return;
+  // Draw connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,0,0,${0.06 * (1 - dist / 120)})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
       }
-
-      currentData = { ...data, url };
-
-      // Populate fields
-      document.getElementById("productTitle").textContent = data.title;
-      document.getElementById("ratingNumber").textContent = data.rating;
-      document.getElementById("summaryText").textContent = data.summary;
-      document.getElementById("verdictText").textContent = data.verdict;
-      document.getElementById("priceBadge").textContent = data.price !== "N/A" ? data.price : "";
-
-      renderStars(data.rating);
-      renderDecisionBadge(data.sentiment);
-      renderList(data.pros, "prosList", "No pros found");
-      renderList(data.cons, "consList", "No cons found");
-      renderHighlights(data.highlights);
-
-      // Sentiment
-      const pct = data.sentiment || 50;
-      document.getElementById("positivePct").textContent = pct + "% Positive";
-      document.getElementById("negativePct").textContent = (100 - pct) + "% Negative";
-      setTimeout(() => { document.getElementById("meterFill").style.width = pct + "%"; }, 100);
-
-      // Image
-      const img = document.getElementById("productImage");
-      if (data.image) { img.src = data.image; img.classList.remove("hidden"); }
-      else { img.classList.add("hidden"); }
-
-      // Save to history
-      saveToHistory({ url, title: data.title.substring(0, 40) + (data.title.length > 40 ? "..." : ""), rating: data.rating });
-
-      resultEl.style.display = "block";
-      setTimeout(() => resultEl.classList.add("active"), 10);
-
-    } catch (err) {
-      clearInterval(interval);
-      loadingEl.classList.remove("active");
-      errorEl.textContent = "Network error. Please try again.";
-      errorEl.classList.add("active");
-    } finally {
-      btn.disabled = false;
     }
   }
 
-  document.getElementById("urlInput").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") handleSubmit();
+  // Draw dots
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,0,0,${p.opacity})`;
+    ctx.fill();
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
   });
 
-  // Load history on page load
+  requestAnimationFrame(drawParticles);
+}
+
+resizeCanvas();
+createParticles();
+drawParticles();
+window.addEventListener('resize', () => { resizeCanvas(); createParticles(); });
+
+// ---- HISTORY ----
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem("synthreview_history") || "[]"); }
+  catch { return []; }
+}
+
+function saveToHistory(item) {
+  let history = loadHistory();
+  history = history.filter(h => h.url !== item.url);
+  history.unshift(item);
+  history = history.slice(0, 5);
+  localStorage.setItem("synthreview_history", JSON.stringify(history));
   renderHistory();
+}
+
+function renderHistory() {
+  const history = loadHistory();
+  const section = document.getElementById("historySection");
+  const list = document.getElementById("historyList");
+  if (history.length === 0) { section.classList.remove("active"); return; }
+  section.classList.add("active");
+  list.innerHTML = "";
+  history.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "history-item";
+    div.innerHTML = `<span class="history-item-title">${item.title}</span><span class="history-item-rating">★ ${item.rating}</span>`;
+    div.onclick = () => { document.getElementById("urlInput").value = item.url; handleSubmit(); };
+    list.appendChild(div);
+  });
+}
+
+// ---- SHARE ----
+let currentData = null;
+
+function copyToClipboard() {
+  if (!currentData) return;
+  const text = `🛍️ ${currentData.title}\n⭐ Rating: ${currentData.rating}/5  💰 ${currentData.price}\n\n📝 Summary:\n${currentData.summary}\n\n✅ Pros:\n${(currentData.pros||[]).map(p=>'+ '+p).join('\n')}\n\n❌ Cons:\n${(currentData.cons||[]).map(c=>'- '+c).join('\n')}\n\n🏆 Verdict: ${currentData.verdict}\n\nAnalysed by SynthReview — synthreview.onrender.com`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById("copyBtn");
+    btn.textContent = "✓ Copied to clipboard!";
+    btn.classList.add("copied");
+    setTimeout(() => { btn.textContent = "📋 Copy Summary"; btn.classList.remove("copied"); }, 2500);
+  });
+}
+
+function shareWhatsApp() {
+  if (!currentData) return;
+  const text = encodeURIComponent(`🛍️ *${currentData.title}*\n⭐ ${currentData.rating}/5  💰 ${currentData.price}\n\n📝 *Summary:* ${currentData.summary}\n\n🏆 *Verdict:* ${currentData.verdict}\n\nAnalysed by SynthReview`);
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+
+// ---- DECISION BADGE ----
+function renderDecisionBadge(sentiment) {
+  const badge = document.getElementById("decisionBadge");
+  const icon = document.getElementById("badgeIcon");
+  const verdict = document.getElementById("badgeVerdict");
+  const reason = document.getElementById("badgeReason");
+
+  if (sentiment >= 70) {
+    badge.className = "decision-badge buy";
+    icon.textContent = "✓";
+    verdict.textContent = "Buy It";
+    reason.textContent = `${sentiment}% positive sentiment — highly recommended by reviewers`;
+  } else if (sentiment >= 50) {
+    badge.className = "decision-badge consider";
+    icon.textContent = "~";
+    verdict.textContent = "Consider It";
+    reason.textContent = `Mixed reviews — read the cons carefully before purchasing`;
+  } else {
+    badge.className = "decision-badge skip";
+    icon.textContent = "✕";
+    verdict.textContent = "Skip It";
+    reason.textContent = `${100 - sentiment}% negative sentiment — look for alternatives`;
+  }
+}
+
+// ---- STARS ----
+function renderStars(rating) {
+  const num = parseFloat(rating);
+  const container = document.getElementById("starsDisplay");
+  container.innerHTML = "";
+  for (let i = 1; i <= 5; i++) {
+    const star = document.createElement("span");
+    star.className = "star" + (i <= Math.round(num) ? "" : " empty");
+    star.textContent = i <= Math.round(num) ? "★" : "☆";
+    container.appendChild(star);
+  }
+}
+
+function renderList(items, containerId, emptyMsg) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  if (!items || items.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = emptyMsg;
+    container.appendChild(li);
+    return;
+  }
+  items.forEach(item => {
+    const li = document.createElement("li");
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    dot.textContent = containerId === "prosList" ? "+" : "−";
+    li.appendChild(dot);
+    li.appendChild(document.createTextNode(item));
+    container.appendChild(li);
+  });
+}
+
+function renderHighlights(highlights) {
+  const container = document.getElementById("highlightsList");
+  container.innerHTML = "";
+  if (!highlights || highlights.length === 0) return;
+  highlights.forEach(h => {
+    const filled = "★".repeat(parseInt(h.stars) || 0);
+    const empty = "☆".repeat(5 - (parseInt(h.stars) || 0));
+    const card = document.createElement("div");
+    card.className = "highlight-card";
+    card.innerHTML = `
+      <div class="highlight-top">
+        <span class="highlight-title">${h.title}</span>
+        <span class="highlight-stars">${filled}${empty}</span>
+      </div>
+      <div class="highlight-comment">"${h.comment}"</div>`;
+    container.appendChild(card);
+  });
+}
+
+const loadingMessages = ["Fetching reviews", "Analysing sentiment", "Extracting insights", "Generating verdict"];
+
+async function handleSubmit() {
+  const url = document.getElementById("urlInput").value.trim();
+  const btn = document.getElementById("submitBtn");
+  const errorEl = document.getElementById("errorMsg");
+  const loadingEl = document.getElementById("loading");
+  const resultEl = document.getElementById("result");
+
+  errorEl.classList.remove("active");
+  resultEl.classList.remove("active");
+  resultEl.style.display = "none";
+
+  if (!url) {
+    errorEl.textContent = "Please enter an Amazon product URL.";
+    errorEl.classList.add("active");
+    return;
+  }
+
+  btn.disabled = true;
+  loadingEl.classList.add("active");
+  let i = 0;
+  const interval = setInterval(() => {
+    document.getElementById("loadingText").textContent = loadingMessages[i % loadingMessages.length];
+    i++;
+  }, 1800);
+
+  try {
+    const res = await fetch("/summarize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    });
+
+    const data = await res.json();
+    clearInterval(interval);
+    loadingEl.classList.remove("active");
+
+    if (!res.ok || data.error) {
+      errorEl.textContent = data.error || "Something went wrong. Please try again.";
+      errorEl.classList.add("active");
+      return;
+    }
+
+    currentData = { ...data, url };
+
+    document.getElementById("productTitle").textContent = data.title;
+    document.getElementById("ratingNumber").textContent = data.rating;
+    document.getElementById("summaryText").textContent = data.summary;
+    document.getElementById("verdictText").textContent = data.verdict;
+    document.getElementById("priceBadge").textContent = data.price && data.price !== "N/A" ? data.price : "";
+
+    renderStars(data.rating);
+    renderDecisionBadge(data.sentiment || 50);
+    renderList(data.pros, "prosList", "No pros found");
+    renderList(data.cons, "consList", "No cons found");
+    renderHighlights(data.highlights);
+
+    const pct = data.sentiment || 50;
+    document.getElementById("positivePct").textContent = pct + "% Positive";
+    document.getElementById("negativePct").textContent = (100 - pct) + "% Negative";
+    setTimeout(() => { document.getElementById("meterFill").style.width = pct + "%"; }, 100);
+
+    const img = document.getElementById("productImage");
+    if (data.image) { img.src = data.image; img.classList.remove("hidden"); }
+    else { img.classList.add("hidden"); }
+
+    saveToHistory({ url, title: data.title.substring(0, 38) + (data.title.length > 38 ? "..." : ""), rating: data.rating });
+
+    resultEl.style.display = "block";
+    setTimeout(() => {
+      resultEl.classList.add("active");
+      resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 10);
+
+  } catch (err) {
+    clearInterval(interval);
+    loadingEl.classList.remove("active");
+    errorEl.textContent = "Network error. Please try again.";
+    errorEl.classList.add("active");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+document.getElementById("urlInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") handleSubmit();
+});
+
+renderHistory();
 </script>
 </body>
 </html>
