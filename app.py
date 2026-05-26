@@ -6,7 +6,7 @@ import json
 
 app = Flask(__name__)
 
-RAPIDAPI_KEY = os.environ.get("RAPIDAPI_KEY", "91450373f9msh35af52807147cc7p1743b6jsn2e56927852de")
+RAPIDAPI_KEY = os.environ.get("RAPIDAPI_KEY", "your_rapidapi_key_here")
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "your_groq_key_here")
 
 def extract_asin(url):
